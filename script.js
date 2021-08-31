@@ -14,6 +14,7 @@ const PLAYERJUMP = 600;
 const PLAYERTERMINALVEL = 2400;
 const BASESPEED = 100;
 const SCALE = 1.5;
+let highScore = 0;
 
 // Tilemap
 loadSprite("tiles", "./gfx/tilemap.png", {
@@ -60,6 +61,14 @@ scene("game", () => {
     ]);
     action("player", (player) => {
         player.pos.x = PLAYERX;
+
+        // Falling off the screen
+        if (player.pos.y > height()) {
+            player.alive = false;
+        }
+
+        // Speed up with time
+        player.speed = BASESPEED + (BASESPEED * timerLabel.time / 800)
     });
     // Jump with space
     let jumpPower = 0;
@@ -70,12 +79,19 @@ scene("game", () => {
             jumpPower = PLAYERJUMP / 3;
         }
         if (heldSince > 0.5 && jumpPower === PLAYERJUMP / 3) {
-            camShake(2);
+            if (player.alive) {
+                camShake(2);
+            }
             jumpPower = 2 * PLAYERJUMP / 3;
         }
         if (heldSince > 1.0 && jumpPower === 2 * PLAYERJUMP / 3) {
-            camShake(5);
+            if (player.alive) {
+                camShake(5);
+            }
             jumpPower = PLAYERJUMP;
+            if (!player.alive) {
+                go("game");
+            }
         }
     });
     keyRelease("space", () => {
@@ -132,8 +148,8 @@ scene("game", () => {
     initialGround();
     // Spawn Obstacles
     let spawnObstacle = () => {
-        let choice = rand(0, 4);
-        if (choice < 3) {
+        let choice = rand(0, 6);
+        if (choice < 4) {
             // Spawn ground enemy
             let enemy = add([sprite("tiles", {
                     animSpeed: 0.2,
@@ -146,20 +162,20 @@ scene("game", () => {
                 "obstacle"
             ]);
             enemy.play("groundEnemy")
-            if (choice > 1 && choice < 2) {
+            if (choice > 2 && choice < 3) {
                 let doubleEnemy = add([sprite("tiles", {
                         animSpeed: 0.2,
                     }),
                     color(1, 0, 0),
                     origin("center"),
                     scale(SCALE),
-                    pos(width() + 3 * TILESIZE, height() * 0.7 - TILESIZE - 5),
+                    pos(width() + rand(2,3) * TILESIZE, height() * 0.7 - TILESIZE - 5),
                     "scroll",
                     "obstacle"
                 ]);
                 doubleEnemy.play("groundEnemy");
             }
-            if (choice > 2 && choice < 3) {
+            if (choice > 3 && choice < 4) {
                 // Spawn air enemy
                 let enemy = add([sprite("tiles", {
                         animSpeed: 0.2,
@@ -167,7 +183,7 @@ scene("game", () => {
                     color(1, 0, 0),
                     origin("center"),
                     scale(SCALE),
-                    pos(width() + TILESIZE, height() * 0.3 - TILESIZE - 5),
+                    pos(width() + TILESIZE, height() * rand(0.25,0.35) - TILESIZE - 5),
                     "scroll",
                     "obstacle"
                 ]);
@@ -181,27 +197,64 @@ scene("game", () => {
                 color(1, 0, 0),
                 origin("center"),
                 scale(SCALE),
-                pos(width() + TILESIZE, height() * 0.3 - TILESIZE - 5),
+                pos(width() + TILESIZE, height() * rand(0.25,0.35) - TILESIZE - 5),
                 "scroll",
                 "obstacle"
             ]);
             enemy.play("airEnemy")
         }
     };
-    loop(1, () => {
+    let spawnForever = () => {
         spawnObstacle();
-    })
+        let waitThis = 5 - timerLabel.time / 1000;
+        wait(waitThis, () => spawnForever());
+    }
     player.collides("obstacle", () => {
-        player.play("dead");
-        player.alive = false;
-        camShake(12);
+        if (player.alive) {
+            player.play("dead");
+            player.alive = false;
+            camShake(12);
+            gameOver.hidden = false;
+            resetMessage.hidden = false;
+        }
     });
     /*
      * Interface
      */
-    //TODO UI
-
-    //TODO Scoring
+    // Scoring
+    let timerLabel = add([
+        text(0),
+        layer("ui"),
+        pos(width() - 5, 5),
+        origin("topright"),
+        {
+            time: 0,
+        },
+    ]);
+    timerLabel.action(() => {
+        if (player.alive) {
+            timerLabel.time += dt();
+            timerLabel.text = String(timerLabel.time.toFixed(1) * 10).padStart(10, 0);
+        }
+        if (timerLabel.text > highScore) {
+            highScore = timerLabel.text;
+        }
+    });
+    let hiScore = add([
+        text(0),
+        layer("ui"),
+        pos(5, 5),
+        origin("topleft"),
+        {
+            time: 0,
+        },
+    ]);
+    hiScore.action(() => {
+        if (timerLabel.text > highScore) {
+            timerLabel.text = highScore;
+        }
+        hiScore.text = "HI " + highScore;
+    });
 
     //Reset
     keyPress("r", () => {
@@ -210,6 +263,25 @@ scene("game", () => {
     keyPress("escape", () => {
         go("game");
     });
+    let gameOver = add([
+        text("GAME OVER"),
+        layer("ui"),
+        scale(1.5),
+        pos(width()/2, height() * 0.85),
+        origin("center"),
+        { hidden: true }
+    ]);
+    let resetMessage = add([
+        text("ESC OR R"),
+        layer("ui"),
+        scale(1.5),
+        pos(width()/2, height() * 0.9),
+        origin("center"),
+        { hidden: true }
+    ]);
+
+    //Start
+    spawnForever();
 });
 
 start("game");
