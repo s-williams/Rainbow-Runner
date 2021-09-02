@@ -32,6 +32,9 @@ loadSprite("tiles", "./gfx/tilemap.png", {
 // Tilemape frames
 const GROUND = 271;
 
+loadSound("dead", "sfx/dead.ogg");
+loadSound("jump", "sfx/jump.ogg");
+
 scene("game", (hScore) => {
     highScore = hScore;
     let score = 0;
@@ -99,6 +102,7 @@ scene("game", (hScore) => {
         if (player.grounded() && player.alive) {
             player.jump(jumpPower);
             player.play("jump");
+            playSfx("jump");
         }
         heldSince = 0;
         jumpPower = 0;
@@ -206,13 +210,14 @@ scene("game", (hScore) => {
     };
     let spawnForever = () => {
         spawnObstacle();
-        let waitThis = 5 - timerLabel.time / 1000;
+        let waitThis = 5 - timerLabel.time / 800;
         wait(waitThis, () => spawnForever());
     }
     player.collides("obstacle", () => {
         if (player.alive) {
             player.play("dead");
             player.alive = false;
+            playSfx("dead");
             camShake(12);
             gameOver.hidden = false;
             resetMessage.hidden = false;
@@ -255,6 +260,18 @@ scene("game", (hScore) => {
         }
         hiScore.text = "HI " + highScore;
     });
+
+    // Play SFX if its unmuted
+    let playSfx = (sfx, volume, detune) => {
+        volume = volume || 1.0;
+        detune = detune || 0;
+        if (!sfxMuted) {
+            play(sfx, {
+                volume: volume,
+                detune: detune,
+            });
+        }
+    };
 
     //Reset
     keyPress("r", () => {
