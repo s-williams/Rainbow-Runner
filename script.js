@@ -12,8 +12,8 @@ const PLAYERX = 40;
 const PLAYERJUMP = 500;
 const PLAYERTERMINALVEL = 2400;
 const BASESPEED = 150;
-const BASESPAWNTIME = 5;
-const SPAWNTIMESPEEDUP = 500; // Lower is faster
+const BASESPAWNTIME = 4;
+const SPEEDUP = 400; // Lower is faster
 const SCALE = 1.5;
 let highScore = 0;
 
@@ -72,7 +72,7 @@ scene("game", (hScore) => {
         }
 
         // Speed up with time
-        //player.speed = BASESPEED + (BASESPEED * timerLabel.time / 800)
+        player.speed = BASESPEED + (BASESPEED * timerLabel.time / SPEEDUP)
     });
     // Jump with space
     let jumpPower = 0;
@@ -125,6 +125,7 @@ scene("game", (hScore) => {
         spawnGround();
     });
     let spawnGround = (x = width() + TILESIZE) => {
+        // Rainbow
         let colour = HSVtoRGB((timerLabel.time * 20 % 255) / 255, 1, 1);
         add([sprite("tiles", {
                 frame: GROUND,
@@ -198,7 +199,7 @@ scene("game", (hScore) => {
     };
     let spawnForever = () => {
         spawnObstacle();
-        let waitThis = BASESPAWNTIME - timerLabel.time / SPAWNTIMESPEEDUP;
+        let waitThis = BASESPAWNTIME - timerLabel.time / SPEEDUP;
         wait(waitThis, () => spawnForever());
     }
     player.collides("obstacle", () => {
