@@ -8,11 +8,10 @@ kaboom({
     debug: false,
 });
 
-const TILESIZE = 20;
 const PLAYERX = 40;
 const PLAYERJUMP = 600;
 const PLAYERTERMINALVEL = 2400;
-const BASESPEED = 100;
+const BASESPEED = 125;
 const SCALE = 1.5;
 let highScore = 0;
 
@@ -33,7 +32,8 @@ loadSprite("tiles", "./gfx/tilemap.png", {
 // Tilemape frames
 const GROUND = 271;
 
-scene("game", () => {
+scene("game", (hScore) => {
+    highScore = hScore;
     let score = 0;
 
     /*
@@ -76,21 +76,21 @@ scene("game", () => {
     keyDown("space", () => {
         heldSince += dt();
         if (heldSince > 0 && jumpPower === 0) {
-            jumpPower = PLAYERJUMP / 3;
+            jumpPower = 2 * PLAYERJUMP / 3;
         }
-        if (heldSince > 0.5 && jumpPower === PLAYERJUMP / 3) {
+        if (heldSince > 0.5 && jumpPower === 2 * PLAYERJUMP / 3) {
             if (player.alive) {
                 camShake(2);
             }
-            jumpPower = 2 * PLAYERJUMP / 3;
+            jumpPower = 2.5 * PLAYERJUMP / 3;
         }
-        if (heldSince > 1.0 && jumpPower === 2 * PLAYERJUMP / 3) {
+        if (heldSince > 1.0 && jumpPower === 2.5 * PLAYERJUMP / 3) {
             if (player.alive) {
                 camShake(5);
             }
-            jumpPower = PLAYERJUMP;
+            jumpPower = 3 * PLAYERJUMP / 3;
             if (!player.alive) {
-                go("game");
+                go("game", highScore);
             }
         }
     });
@@ -258,10 +258,10 @@ scene("game", () => {
 
     //Reset
     keyPress("r", () => {
-        go("game");
+        go("game", highScore);
     });
     keyPress("escape", () => {
-        go("game");
+        go("menu", highScore);
     });
     let gameOver = add([
         text("GAME OVER"),
@@ -283,5 +283,3 @@ scene("game", () => {
     //Start
     spawnForever();
 });
-
-start("game");
