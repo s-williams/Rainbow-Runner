@@ -9,9 +9,11 @@ kaboom({
 });
 
 const PLAYERX = 40;
-const PLAYERJUMP = 600;
+const PLAYERJUMP = 500;
 const PLAYERTERMINALVEL = 2400;
-const BASESPEED = 125;
+const BASESPEED = 150;
+const BASESPAWNTIME = 5;
+const SPAWNTIMESPEEDUP = 500; // Lower is faster
 const SCALE = 1.5;
 let highScore = 0;
 
@@ -37,7 +39,6 @@ loadSound("jump", "sfx/jump.ogg");
 
 scene("game", (hScore) => {
     highScore = hScore;
-    let score = 0;
 
     /*
      * Player
@@ -49,7 +50,7 @@ scene("game", (hScore) => {
         }),
         area(vec2(-4, 0), vec2(4, 8)),
         pos(16 * 6, 16),
-        color(1, 0, 0),
+        color(1, 1, 1),
         origin("center"),
         scale(SCALE),
         body({
@@ -71,27 +72,14 @@ scene("game", (hScore) => {
         }
 
         // Speed up with time
-        player.speed = BASESPEED + (BASESPEED * timerLabel.time / 800)
+        //player.speed = BASESPEED + (BASESPEED * timerLabel.time / 800)
     });
     // Jump with space
     let jumpPower = 0;
     let heldSince = 0;
     keyDown("space", () => {
         heldSince += dt();
-        if (heldSince > 0 && jumpPower === 0) {
-            jumpPower = 2 * PLAYERJUMP / 3;
-        }
-        if (heldSince > 0.5 && jumpPower === 2 * PLAYERJUMP / 3) {
-            if (player.alive) {
-                camShake(2);
-            }
-            jumpPower = 2.5 * PLAYERJUMP / 3;
-        }
-        if (heldSince > 1.0 && jumpPower === 2.5 * PLAYERJUMP / 3) {
-            if (player.alive) {
-                camShake(5);
-            }
-            jumpPower = 3 * PLAYERJUMP / 3;
+        if (heldSince > 1.0) {
             if (!player.alive) {
                 go("game", highScore);
             }
@@ -136,12 +124,13 @@ scene("game", (hScore) => {
     on("destroy", "ground", (g) => {
         spawnGround();
     });
-    let spawnGround = (x=width()+TILESIZE) => {
+    let spawnGround = (x = width() + TILESIZE) => {
+        let colour = HSVtoRGB((timerLabel.time * 20 % 255) / 255, 1, 1);
         add([sprite("tiles", {
                 frame: GROUND,
             }),
             solid(),
-            color(1, 0, 0),
+            color(colour.r, colour.g, colour.b),
             origin("center"),
             scale(SCALE),
             pos(x, height() * 0.7),
@@ -149,7 +138,6 @@ scene("game", (hScore) => {
             "ground"
         ]);
     };
-    initialGround();
     // Spawn Obstacles
     let spawnObstacle = () => {
         let choice = rand(0, 6);
@@ -187,7 +175,7 @@ scene("game", (hScore) => {
                     color(1, 0, 0),
                     origin("center"),
                     scale(SCALE),
-                    pos(width() + TILESIZE, height() * rand(0.25,0.35) - TILESIZE - 5),
+                    pos(width() + TILESIZE, height() * rand(0.55,0.6) - (2 * TILESIZE) - 5),
                     "scroll",
                     "obstacle"
                 ]);
@@ -201,7 +189,7 @@ scene("game", (hScore) => {
                 color(1, 0, 0),
                 origin("center"),
                 scale(SCALE),
-                pos(width() + TILESIZE, height() * rand(0.25,0.35) - TILESIZE - 5),
+                pos(width() + TILESIZE, height() * rand(0.3,0.6)),
                 "scroll",
                 "obstacle"
             ]);
@@ -210,7 +198,7 @@ scene("game", (hScore) => {
     };
     let spawnForever = () => {
         spawnObstacle();
-        let waitThis = 5 - timerLabel.time / 800;
+        let waitThis = BASESPAWNTIME - timerLabel.time / SPAWNTIMESPEEDUP;
         wait(waitThis, () => spawnForever());
     }
     player.collides("obstacle", () => {
@@ -299,4 +287,5 @@ scene("game", (hScore) => {
 
     //Start
     spawnForever();
+    initialGround();
 });

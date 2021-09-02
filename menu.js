@@ -42,7 +42,7 @@ scene("menu", (highScore) => {
         }),
         area(vec2(-4, 0), vec2(4, 8)),
         pos(240, 160),
-        color(1, 0, 0),
+        color(1, 1, 1),
         origin("center"),
         scale(1.5),
         "player",
@@ -187,7 +187,7 @@ scene("credits", (highScore) => {
         },
     ]);
     add([
-        text("Sprites:"),
+        text("GFX/SFX:"),
         pos(240, 180),
         origin("center"),
         scale(1),
