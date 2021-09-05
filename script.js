@@ -36,9 +36,16 @@ const GROUND = 271;
 
 loadSound("dead", "sfx/dead.ogg");
 loadSound("jump", "sfx/jump.ogg");
+loadSound("chirp", "sfx/chirp.ogg");
+loadSound("music", "sfx/music.mp3");
 
 scene("game", (hScore) => {
     highScore = hScore;
+
+    const music = play("music", {
+        loop: true,
+        volume: musicMuted ? 0 : 1.00
+    });
 
     /*
      * Player
@@ -197,6 +204,9 @@ scene("game", (hScore) => {
             enemy.play("airEnemy")
         }
     };
+    on("destroy", "obstacle", () => {
+        playSfx("chirp");
+    })
     let spawnForever = () => {
         spawnObstacle();
         let waitThis = BASESPAWNTIME - timerLabel.time / SPEEDUP;
@@ -210,6 +220,7 @@ scene("game", (hScore) => {
             camShake(12);
             gameOver.hidden = false;
             resetMessage.hidden = false;
+            music.stop();
         }
     });
     /*
