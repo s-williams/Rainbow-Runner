@@ -164,19 +164,19 @@ scene("credits", (highScore) => {
     ]);
     add([
         text("Programming:"),
-        pos(240, 100),
+        pos(240, 60),
         origin("center"),
         scale(1),
     ]);
     add([
         text("swilliamsio"),
-        pos(240, 120),
+        pos(240, 80),
         origin("center"),
         scale(2),
     ]);
     add([
         text("https://www.swilliams.io/"),
-        pos(240, 140),
+        pos(240, 100),
         origin("center"),
         scale(1),
         "button",
@@ -188,25 +188,49 @@ scene("credits", (highScore) => {
     ]);
     add([
         text("GFX/SFX:"),
-        pos(240, 180),
+        pos(240, 140),
         origin("center"),
         scale(1),
     ]);
     add([
         text("Kenney"),
-        pos(240, 200),
+        pos(240, 160),
         origin("center"),
         scale(2),
     ]);
     add([
         text("https://www.kenney.nl/"),
-        pos(240, 220),
+        pos(240, 180),
         origin("center"),
         scale(1),
         "button",
         {
             clickAction: () => {
                 window.open("https://www.kenney.nl/", '_blank');
+            }
+        },
+    ]);
+    add([
+        text("Music:"),
+        pos(240, 220),
+        origin("center"),
+        scale(1),
+    ]);
+    add([
+        text("WaxTerK - Puzzle Cat"),
+        pos(240, 240),
+        origin("center"),
+        scale(2),
+    ]);
+    add([
+        text("https://www.newgrounds.com/audio/listen/1056740"),
+        pos(240, 260),
+        origin("center"),
+        scale(1),
+        "button",
+        {
+            clickAction: () => {
+                window.open("https://www.newgrounds.com/audio/listen/1056740", '_blank');
             }
         },
     ]);
