@@ -13,7 +13,7 @@ const PLAYERJUMP = 500;
 const PLAYERTERMINALVEL = 2400;
 const BASESPEED = 150;
 const BASESPAWNTIME = 4;
-const SPEEDUP = 400; // Lower is faster
+const SPEEDUP = 350; // Lower is faster
 const SCALE = 1.5;
 let highScore = 0;
 
@@ -82,7 +82,6 @@ scene("game", (hScore) => {
         player.speed = BASESPEED + (BASESPEED * timerLabel.time / SPEEDUP)
     });
     // Jump with space
-    let jumpPower = 0;
     let heldSince = 0;
     keyDown("space", () => {
         heldSince += dt();
@@ -92,16 +91,21 @@ scene("game", (hScore) => {
             }
         }
     });
-    keyRelease("space", () => {
-        // These 2 functions are provided by body() component
+    let jump = () => {
         if (player.grounded() && player.alive) {
-            player.jump(jumpPower);
+            player.jump();
             player.play("jump");
             playSfx("jump");
         }
+
+    };
+    keyRelease("space", () => {
+        jump();
         heldSince = 0;
-        jumpPower = 0;
     });
+    mouseRelease(() => {
+        jump();
+    })
     player.on("grounded", () => {
         if (player.alive) {
             player.play("run");
