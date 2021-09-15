@@ -6,4 +6,4 @@ The game is available to play, for free, in your browser at: https://swilliamsio
 
 ![A screenshot of Rainbow Runner](pictures/runner1.png "Thrilling?")
 
-All programming and art was made by [s-williams](https://github.com/s-williams). Graphics and sound effects were provided by [Kenney](https://www.kenney.nl/) (CC0). Music was provided by [WaxTerK](https://www.newgrounds.com/audio/listen/1056740) (CCBY-SA).
+All programming was written by [s-williams](https://github.com/s-williams). Graphics and sound effects were provided by [Kenney](https://www.kenney.nl/) (CC0). Music was provided by [WaxTerK](https://www.newgrounds.com/audio/listen/1056740) (CCBY-SA).
