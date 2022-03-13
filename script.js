@@ -220,6 +220,7 @@ scene("game", (hScore) => {
         if (player.alive) {
             player.play("dead");
             player.alive = false;
+            music.stop();
             playSfx("dead");
             camShake(12);
             gameOver.hidden = false;
@@ -280,9 +281,11 @@ scene("game", (hScore) => {
     //Reset
     keyPress("r", () => {
         go("game", highScore);
+        music.stop();
     });
     keyPress("escape", () => {
         go("menu", highScore);
+        music.stop();
     });
     let gameOver = add([
         text("GAME OVER"),
