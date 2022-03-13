@@ -74,8 +74,8 @@ scene("game", (hScore) => {
         player.pos.x = PLAYERX;
 
         // Falling off the screen
-        if (player.pos.y > height()) {
-            player.alive = false;
+        if ((player.pos.y > height() || player.pos.y < 0) && player.alive) {
+            die();
         }
 
         // Speed up with time
@@ -216,8 +216,7 @@ scene("game", (hScore) => {
         let waitThis = BASESPAWNTIME - timerLabel.time / SPEEDUP;
         wait(waitThis, () => spawnForever());
     }
-    player.collides("obstacle", () => {
-        if (player.alive) {
+    let die = () => {
             player.play("dead");
             player.alive = false;
             music.stop();
@@ -225,7 +224,10 @@ scene("game", (hScore) => {
             camShake(12);
             gameOver.hidden = false;
             resetMessage.hidden = false;
-            music.stop();
+    }
+    player.collides("obstacle", () => {
+        if (player.alive) {
+            die();
         }
     });
     /*
